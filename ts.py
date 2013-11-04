@@ -16,6 +16,8 @@ def readList():
     while not eof():
         token = readToken()
         if (None != token): result.append(token)
+        else: break
+
     return result
 
 def readToken():
