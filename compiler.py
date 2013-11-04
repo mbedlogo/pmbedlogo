@@ -41,6 +41,7 @@ def pass2_item(item):
     elif isinstance(item, float): pass2_item(floatbits(item))
     elif isinstance(item, str): pass2_string(item)
     elif isinstance(item, ts.dsym): pass2_dsym(item)
+    elif isinstance(item, ts.qsym): pass2_string(item.sym.pname)
     else: pass2_symbol(item)
 
 def pass2_number(n):
@@ -128,6 +129,7 @@ def pass3_item(item):
 def pass3_string(s):
     add(3, byte(0, 1 + len(s)), byte(1, 1 + len(s)))
     map(add, [ord(c) for c in s])
+    add(0)
 
 def byte(shift, x):
     shift *= 8
