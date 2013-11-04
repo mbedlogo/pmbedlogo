@@ -1,10 +1,6 @@
 
 import numbers, ts
 
-logolocals = []
-
-
-
 def test(x):
     global result
     result = []
@@ -16,24 +12,29 @@ def run_line(line):
     print compile_line(ts.readList())
 
 def compile_line(code):
+    global state
+    state = record()
+    state.name = '*toplevel*'
+    state.toplevel = False
+    state.command = True
+    state.body = []
+
     global result, pc
-    result = arglist = locals = []
+    result = []
     pc = 0
-    name = '*toplevel*'
     
-    global istoplevel
-    istoplevel = False
-    
-    global body
-    body = code
-    pass2_body()
+    pass2_body(code)
     return pass3(result[:]) + [0]
 
-def pass2_body():
-    global command
-    command = True
-    while ([] != body):
-        pass2_item(body.pop(0))
+def pass2_body(code):
+    oldbody, state.body = state.body, code
+
+    oldcommand, state.command = state.command, True
+    while ([] != state.body):
+        pass2_item(state.body.pop(0))
+
+    state.command = oldcommand
+    state.body = oldbody
 
 def pass2_item(item):
     if isinstance(item, list): pass2_list(item)
@@ -59,11 +60,11 @@ def pass2_list(item):
         # deal with ## and #
         return
     
-    global command
-    command = True
+    oldcommand, state.command = state.command, True
     add_and_count(['-[-', 0], 3)
     pass2_body(item)
     add_and_count(['-]-', 0], 1)
+    state.command = oldcommand
 
 def pass2_dsym(item):
     offset = dsym_offset(item)
@@ -76,7 +77,7 @@ def dsym_offset(item):
 def pass2_symbol(item):
     nargs = item.args
     if nargs < 0: raise ValueError('not enough inputs to ' + item)
-    if command:
+    if state.command:
         if item.outputs: raise ValueError("you don't say what to do with " + item)
     else:
         if not item.outputs: raise ValueError(item + " doesn't output")
@@ -85,19 +86,16 @@ def pass2_symbol(item):
     pass2_funcall(item)
 
 def pass2_argloop(nargs):
-    global istoplevel
-    let_istoplevel = istoplevel
-    istoplevel = False
+    oldtoplevel, state.toplevel = state.toplevel, False
+    oldcommand, state.command = state.command, False
+
+    while 0 < nargs:
+        if len(state.body) == 0: raise ValueError('not enough inputs to ' + item)
+        pass2_item(state.body.pop(0))
+        nargs -= 1
     
-    global command
-    let_command = command
-    command = False
-        
-    if len(body) == 0: raise ValueError('not enough inputs to ' + item)
-    pass2_item(body.pop(0))
-    
-    istoplevel = let_istoplevel
-    command = let_command
+    state.toplevel = oldtoplevel
+    state.command = oldcommand
 
 def pass2_funcall(item):
     # handle ufun
@@ -107,8 +105,10 @@ def pass2_funcall(item):
 
 
 def pass3(body):
-    global result
+    global result, lists
     result = []
+    lists = []
+
     while ([] != body):
         pass3_item(body.pop(0))
 
