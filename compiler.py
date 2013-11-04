@@ -119,7 +119,10 @@ def pass3_item(item):
         ('to', lambda: add(x.args, x.locals)),
         ('byte', lambda: add(1, byte(0, x))),
         ('number', lambda: add(2, byte(0, x), byte(1, x), byte(2, x), byte(3, x))),
+        ('-[-', lambda: pass3_start_list()),
         ('string', lambda: pass3_string(x)),
+        ('-]-', lambda: add_eol(4)),
+        ('-]-r', lambda: add_eol(5)),
         ('prim', lambda: add(prim(x))),
         ('external', lambda: add_ext(x)),
     ])
@@ -128,6 +131,19 @@ def pass3_string(s):
     add(3, byte(0, 1 + len(s)), byte(1, 1 + len(s)))
     map(add, [ord(c) for c in s])
     add(0)
+
+def pass3_start_list():
+    add(3)
+    lists.append(len(result))
+    add(0)
+    add(0)
+
+def add_eol(indicator):
+    add(indicator)
+    offset = lists.pop()
+    listlen = len(result) - offset - 2
+    result[offset] = byte(0, listlen)
+    result[offset+1] = byte(1, listlen)
 
 def byte(shift, x):
     shift *= 8
@@ -176,7 +192,11 @@ def add_ext(x):
 
 prims = []
 setup_prims('prim', prims,
-    ('not', True, 1)
+    ('run', False, 1),
+    ('repeat', False, 2),
+    ('not', True, 1),
+    ('random', True, 1),
+    ('extend', True, 1),
 )
 
 externals = []
