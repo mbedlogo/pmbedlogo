@@ -56,9 +56,7 @@ def pass2_string(s):
     add_and_count(['string', s], len(s))
 
 def pass2_list(item):
-    if item != []:
-        # deal with ## and #
-        return
+    # TODO: deal with ## and #
     
     oldcommand, state.command = state.command, True
     add_and_count(['-[-', 0], 3)
