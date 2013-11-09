@@ -80,22 +80,21 @@ def pass2(code):
     return result
 
 def pass2_fcn(fcn):
-    name, arglist, body = fcn
-
     global state
     state = record()
-    state.name = '*toplevel*'
     state.toplevel = True
     state.command = True
     state.body = []
-    state.arglist = arglist
+    state.locals = []
 
-    name.addr = pc
-    name.locals = 0
-    add_and_count(['to', name], 2)
+    state.name, state.arglist, body = fcn
+
+    state.name.addr = pc
+    state.name.locals = 0
+    add_and_count(['to', state.name], 2)
     pass2_body(body[:])
     add_and_count(['prim', ts.intern('stop')], 1)
-    name.endaddr = pc
+    state.name.endaddr = pc
 
 def pass2_body(code):
     oldbody, state.body = state.body, code
@@ -150,12 +149,25 @@ def handle_closing(): pass
 def handle_waituntil(): pass
 
 def handle_make():
-    var = ts.dsym(ts.intern(str(state.body.pop(0))))
+    var = sym(state.body.pop(0))
     offset = dsym_offset(var)
     pass2_argloop(1)
     add_and_count(['lmake', offset], 2)
 
-def handle_let(): pass
+def handle_let():
+    if state.name == '*toplevel*': raise ValueError('let can only be used in a procedure')
+    newbody = state.body.pop(0)
+    oldbody, state.body = state.body, newbody
+    if not isinstance(state.body, list): raise ValueError('let needs a list as input')
+    while [] != state.body:
+        state.locals.append(sym(state.body[0]))
+        state.name.locals += 1
+        handle_make()
+
+    state.body = oldbody
+
+def sym(x):
+    return ts.dsym(ts.intern(str(x)))
 
 def pass2_symbol(item):
     nargs = item.args
