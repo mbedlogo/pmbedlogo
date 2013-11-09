@@ -41,16 +41,18 @@ def readToken():
         try: return float(s[:-1])
         except ValueError: pass
 
+    if s[0:2] == "0x":
+        try: return int(s, 16)
+        except ValueError: pass
+
+    if s[0] == '0':
+        try: return int(s, 8)
+        except ValueError: pass
+
     try: return int(s)
     except ValueError: pass
     
     try: return float(s)
-    except ValueError: pass
-    
-    try: return int(s, 8)
-    except ValueError: pass
-    
-    try: return int(s, 16)
     except ValueError: pass
     
     return intern(s)
