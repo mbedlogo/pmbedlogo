@@ -165,8 +165,8 @@ def pass2_argloop(nargs):
     state.command = oldcommand
 
 def pass2_funcall(item):
-    # handle ufun
-    if item.type == 'external': add_and_count(['external', item], 2)
+    if item.type == 'ufun': add_and_count(['ufun', item], 3)
+    elif item.type == 'external': add_and_count(['external', item], 2)
     elif item.special: handle_special(item)
     else: add_and_count(['prim', item], 1)
 
@@ -192,6 +192,7 @@ def pass3_item(item):
         ('string', lambda: pass3_string(x)),
         ('-]-', lambda: add_eol(4)),
         ('-]-r', lambda: add_eol(5)),
+        ('ufun', lambda: add(8, byte(0, x.addr), byte(1, x.addr))),
         ('prim', lambda: add(prim(x))),
         ('external', lambda: add_ext(x)),
     ])
