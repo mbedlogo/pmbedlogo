@@ -116,6 +116,8 @@ class symbol:
     
     def __repr__(self): return '<symbol: ' + self.pname + '>'
 
+    def __str__(self): return self.pname
+
 class qsym:
     def __init__(self, sym): self.sym = sym
     

@@ -26,6 +26,75 @@ def compile_line(code):
     pass2_body(code)
     return pass3(result[:]) + [0]
 
+def compile_file(file):
+    setup()
+    ts.init(file)
+    print pass3(pass2(pass1(ts.readList())))
+
+def pass1(code):
+    global result
+    result = []
+    while [] != code:
+        token = code.pop(0)
+        if str(token) == 'to': pass1_fcn(code.pop(0), pass1_args(code), pass1_body(code))
+
+    return result
+
+def pass1_fcn(name, args, body):
+    if 'type' in name.__dict__: raise ValueError(str(name) + " already defined")
+    add((name, args, body))
+    name.args = len(args)
+    name.argnames = args
+    name.type = 'ufun'
+    name.outputs = mmmember(ts.intern('output'), body)
+
+def mmmember(item, body):
+    if isinstance(body, list): return [] != filter(lambda(x): mmmember(item, x), body)
+    return item == body
+
+def pass1_args(code):
+    result = []
+    while [] != code:
+        if not isinstance(code[0], ts.dsym): break
+        result.append(code.pop(0));
+
+    return result
+
+def pass1_body(code):
+    result = []
+    while [] != code:
+        token = code.pop(0)
+        if isinstance(token, ts.symbol) and str(token) == 'end': break
+        result.append(token)
+
+    return result
+
+def pass2(code):
+    global result, pc
+    result = []
+    pc = 0x1000
+    while [] != code:
+        pass2_fcn(code.pop(0))
+
+    return result
+
+def pass2_fcn(fcn):
+    name, arglist, body = fcn
+
+    global state
+    state = record()
+    state.name = '*toplevel*'
+    state.toplevel = True
+    state.command = True
+    state.body = []
+
+    name.addr = pc
+    name.locals = 0
+    add_and_count(['to', name], 2)
+    pass2_body(body[:])
+    add_and_count(['prim', ts.intern('stop')], 1)
+    name.endaddr = pc
+
 def pass2_body(code):
     oldbody, state.body = state.body, code
 
@@ -190,23 +259,31 @@ def add_ext(x):
     
     add(externals.index(x))
 
-prims = []
-setup_prims('prim', prims,
-    ('run', False, 1),
-    ('repeat', False, 2),
-    ('not', True, 1),
-    ('random', True, 1),
-    ('extend', True, 1),
-)
+def setup():
+    ts.oblist.clear()
 
-externals = []
-setup_prims('external', externals,
-    ('print', False, 1)
-)
+    global prims, externals, infixes
+    prims = []
+    setup_prims('prim', prims,
+        ('stop', False, 0),
+        ('output', False, 1),
+        ('run', False, 1),
+        ('repeat', False, 2),
+        ('not', True, 1),
+        ('random', True, 1),
+        ('extend', True, 1),
+    )
 
-infixes = []
+    externals = []
+    setup_prims('external', externals,
+        ('print', False, 1)
+    )
 
-setup_specials('(', ')', 'waituntil', 'make', 'let')
+    infixes = []
+
+    setup_specials('(', ')', 'waituntil', 'make', 'let')
+
+setup()
 
 class record: pass
 
