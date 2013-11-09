@@ -126,6 +126,10 @@ class qsym:
     def __str__(self): return self.sym.pname
         
 class dsym:
-    def __init__(self): self.sym = sym
+    def __init__(self, sym): self.sym = sym
     
     def __repr__(self): return '<dsym: ' + self.sym.pname + '>'
+
+    def __eq__(self, other):
+        if not isinstance(other, dsym): return False
+        return self.sym.pname == other.sym.pname

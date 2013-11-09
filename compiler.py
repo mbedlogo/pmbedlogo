@@ -88,6 +88,7 @@ def pass2_fcn(fcn):
     state.toplevel = True
     state.command = True
     state.body = []
+    state.arglist = arglist
 
     name.addr = pc
     name.locals = 0
@@ -139,8 +140,8 @@ def pass2_dsym(item):
     add_and_count(['lthing', offset], 2)
 
 def dsym_offset(item):
-    if item in arglist: return len(arglist) - arglist.index[item] - 1
-    return 0xff & 0 - locals.index[item] - 1
+    if item in state.arglist: return len(state.arglist) - state.arglist.index(item) - 1
+    return 0xff & 0 - state.locals.index(item) - 1
 
 def pass2_symbol(item):
     nargs = item.args
@@ -193,6 +194,7 @@ def pass3_item(item):
         ('string', lambda: pass3_string(x)),
         ('-]-', lambda: add_eol(4)),
         ('-]-r', lambda: add_eol(5)),
+        ('lthing', lambda: add(6, x)),
         ('ufun', lambda: add(8, byte(0, x.addr), byte(1, x.addr))),
         ('prim', lambda: add(prim(x))),
         ('external', lambda: add_ext(x)),
