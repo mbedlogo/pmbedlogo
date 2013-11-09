@@ -120,6 +120,8 @@ class qsym:
     def __init__(self, sym): self.sym = sym
     
     def __repr__(self): return '<qsym: ' + self.sym.pname + '>'
+
+    def __str__(self): return self.sym.pname
         
 class dsym:
     def __init__(self): self.sym = sym

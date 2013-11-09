@@ -42,7 +42,7 @@ def pass2_item(item):
     elif isinstance(item, float): pass2_item(floatbits(item))
     elif isinstance(item, str): pass2_string(item)
     elif isinstance(item, ts.dsym): pass2_dsym(item)
-    elif isinstance(item, ts.qsym): pass2_string(item.sym.pname)
+    elif isinstance(item, ts.qsym): pass2_string(item)
     else: pass2_symbol(item)
 
 def pass2_number(n):
@@ -51,8 +51,8 @@ def pass2_number(n):
     else:
         add_and_count(['number', n], 5)
 
-def pass2_string(s):
-    s = s.replace('\\n', '\n')
+def pass2_string(item):
+    s = str(item).replace('\\n', '\n')
     add_and_count(['string', s], len(s))
 
 def pass2_list(item):
