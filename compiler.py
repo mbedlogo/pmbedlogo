@@ -143,6 +143,20 @@ def dsym_offset(item):
     if item in state.arglist: return len(state.arglist) - state.arglist.index(item) - 1
     return 0xff & 0 - state.locals.index(item) - 1
 
+def handle_opening(): pass
+
+def handle_closing(): pass
+
+def handle_waituntil(): pass
+
+def handle_make():
+    var = ts.dsym(ts.intern(str(state.body.pop(0))))
+    offset = dsym_offset(var)
+    pass2_argloop(1)
+    add_and_count(['lmake', offset], 2)
+
+def handle_let(): pass
+
 def pass2_symbol(item):
     nargs = item.args
     if nargs < 0: raise ValueError('not enough inputs to ' + item)
@@ -169,9 +183,8 @@ def pass2_argloop(nargs):
 def pass2_funcall(item):
     if item.type == 'ufun': add_and_count(['ufun', item], 3)
     elif item.type == 'external': add_and_count(['external', item], 2)
-    elif item.special: handle_special(item)
+    elif item.special: item.handler()
     else: add_and_count(['prim', item], 1)
-
 
 def pass3(body):
     global result, lists
@@ -195,6 +208,7 @@ def pass3_item(item):
         ('-]-', lambda: add_eol(4)),
         ('-]-r', lambda: add_eol(5)),
         ('lthing', lambda: add(6, x)),
+        ('lmake', lambda: add(7, x)),
         ('ufun', lambda: add(8, byte(0, x.addr), byte(1, x.addr))),
         ('prim', lambda: add(prim(x))),
         ('external', lambda: add_ext(x)),
@@ -248,9 +262,13 @@ def setup_prims(primtype, dest, *newprims):
 
 def setup_specials(*newprims):
     for x in newprims:
-        sym = ts.intern(x)
+        name, handler = x
+        sym = ts.intern(name)
         sym.type = 'prim'
+        sym.args = 0
+        sym.outputs = False
         sym.special = True
+        sym.handler = handler
 
 def prim(x):
     return prims.index(x) + 12
@@ -285,7 +303,13 @@ def setup():
 
     infixes = []
 
-    setup_specials('(', ')', 'waituntil', 'make', 'let')
+    setup_specials(
+        ('(', handle_opening),
+        (')', handle_closing),
+        ('waituntil', handle_waituntil),
+        ('make', handle_make),
+        ('let', handle_let)
+    )
 
 setup()
 
