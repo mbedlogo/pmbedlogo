@@ -176,7 +176,7 @@ def dsym_offset(item):
     return 0xff & 0 - state.locals.index(item) - 1
 
 def handle_opening():
-    pass2_argloop(1)
+    pass2_argloop(1, ')')
     if state.body.pop(0) != ts.intern(')'): raise ValueError('() error')
 
 def handle_closing():
@@ -187,7 +187,7 @@ def handle_waituntil(): pass
 def handle_make():
     var = sym(state.body.pop(0))
     offset = dsym_offset(var)
-    pass2_argloop(1)
+    pass2_argloop(1, 'make')
     add_and_count(['lmake', offset], 2)
 
 def handle_let():
@@ -217,7 +217,7 @@ def pass2_symbol(item):
     else:
         if not item.outputs: raise ValueError(str(item) + " doesn't output")
     
-    pass2_argloop(nargs)
+    pass2_argloop(nargs, str(item))
     pass2_funcall(item)
 
 def try_macro(item):
@@ -227,7 +227,7 @@ def try_macro(item):
     state.body = val + state.body
     pass2_item(state.body.pop(0))
 
-def pass2_argloop(nargs):
+def pass2_argloop(nargs, item):
     oldtoplevel, state.toplevel = state.toplevel, False
     oldcommand, state.command = state.command, False
 
