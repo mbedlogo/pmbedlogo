@@ -1,11 +1,7 @@
 
-import numbers, ts
+import ts
 
-def test(x):
-    global result
-    result = []
-    pass3(x)
-    return result
+class record: pass
 
 def run_line(line):
     ts.init(line)
@@ -26,7 +22,7 @@ def compile_line(code):
     pass2_body(code)
     return pass3(result[:]) + [0]
 
-def compile_file(file):
+def compile(file):
     setup()
     f = open(file)
     ts.init(f.read())
@@ -424,16 +420,12 @@ def setup():
 
 setup()
 
-class record: pass
+print 'Welcome to Logo!'
+while True:
+    try: s = raw_input()
+    except EOFError: break
 
-class dsym: pass
-
-class symbol:
-    def __init__(self, name):
-        self.name = name
-    
-    def __repr__(self):
-        return '<symbol: ' + self.name + '>'
-
-    def __str__(self):
-        return self.name
+    try:
+        if 1 < len(s) and s[0] == '.': eval(s[1:])
+        else: run_line(s)
+    except ValueError as e: print e
