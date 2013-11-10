@@ -28,7 +28,9 @@ def compile_line(code):
 
 def compile_file(file):
     setup()
-    ts.init(file)
+    f = open(file)
+    ts.init(f.read())
+    f.close()
     print pass3(pass2(pass1(ts.readList())))
 
 def pass1(code):
