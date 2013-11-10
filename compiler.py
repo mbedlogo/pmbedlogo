@@ -356,10 +356,15 @@ def setup():
     infixes = []
     prims = []
     setup_prims('prim', prims,
-        ('stop', False, 0),
-        ('output', False, 1),
+        ('stop', False, 0), ('output', False, 1),
+        ('call', False, 1),
         ('run', False, 1),
+        ('runmacro', False, 1),
         ('repeat', False, 2),
+        ('loop', False, 1),
+        ('if', False, 2),
+        ('ifelse', False, 3),
+        ('waituntil', False, 1),
         ('gwrite', False, 2),
         ('gread', True, 1),
         ('+', True, -1),
@@ -377,6 +382,12 @@ def setup():
         ('or', True, -1),
         ('xor', True, -1),
         ('not', True, 1),
+        ('lsl', True, 2),
+        ('g', True, 1), ('fl', True, 1),
+        ('readb', True, 1), ('writeb', False, 2),
+        ('readh', True, 1), ('writeh', False, 2),
+        ('read', True, 1), ('write', False, 2),
+        ('sp', True, 0),
     )
 
     externals = []
