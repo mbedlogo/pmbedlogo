@@ -274,11 +274,11 @@ def setup_prims(primtype, dest, *newprims):
 
 def setup_specials(*newprims):
     for x in newprims:
-        name, handler = x
+        name, outputs, handler = x
         sym = ts.intern(name)
         sym.type = 'prim'
         sym.args = 0
-        sym.outputs = False
+        sym.outputs = outputs
         sym.special = True
         sym.handler = handler
 
@@ -316,11 +316,11 @@ def setup():
     infixes = []
 
     setup_specials(
-        ('(', handle_opening),
-        (')', handle_closing),
-        ('waituntil', handle_waituntil),
-        ('make', handle_make),
-        ('let', handle_let)
+        ('(', True, handle_opening),
+        (')', False, handle_closing),
+        ('waituntil', False, handle_waituntil),
+        ('make', False, handle_make),
+        ('let', False, handle_let)
     )
 
 setup()
