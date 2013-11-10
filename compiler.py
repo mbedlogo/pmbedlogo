@@ -232,6 +232,7 @@ def pass2_argloop(nargs):
     while 0 < nargs:
         if len(state.body) == 0: raise ValueError('not enough inputs to ' + item)
         pass2_item(state.body.pop(0))
+        infix_check()
         nargs -= 1
     
     state.toplevel = oldtoplevel
@@ -242,6 +243,16 @@ def pass2_funcall(item):
     elif item.type == 'external': add_and_count(['external', item], 2)
     elif item.special: item.handler()
     else: add_and_count(['prim', item], 1)
+
+def infix_check():
+    if not is_infix(): return
+    fcn = state.body.pop(0)
+    pass2_item(state.body.pop(0))
+    pass2_funcall(fcn)
+    infix_check()
+
+def is_infix():
+    return [] != state.body and state.body[0] in infixes
 
 def pass3(body):
     global result, lists
@@ -342,6 +353,7 @@ def setup():
     ts.oblist.clear()
 
     global prims, externals, infixes
+    infixes = []
     prims = []
     setup_prims('prim', prims,
         ('stop', False, 0),
@@ -350,17 +362,27 @@ def setup():
         ('repeat', False, 2),
         ('gwrite', False, 2),
         ('gread', True, 1),
-        ('not', True, 1),
+        ('+', True, -1),
+        ('-', True, -1),
+        ('*', True, -1),
+        ('/', True, -1),
+        ('%', True, -1),
         ('random', True, 1),
         ('extend', True, 1),
+        ('=', True, -1),
+        ('!=', True, -1),
+        ('>', True, -1),
+        ('<', True, -1),
+        ('and', True, -1),
+        ('or', True, -1),
+        ('xor', True, -1),
+        ('not', True, 1),
     )
 
     externals = []
     setup_prims('external', externals,
         ('print', False, 1)
     )
-
-    infixes = []
 
     setup_specials(
         ('(', True, handle_opening),
