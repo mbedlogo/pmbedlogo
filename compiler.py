@@ -39,6 +39,7 @@ def pass1(code):
         if str(token) == 'to': pass1_fcn(code.pop(0), pass1_args(code), pass1_body(code))
         elif str(token) == 'define': pass1_fcn(code.pop(0), code.pop(0), code.pop(0))
         elif str(token) == 'global': setup_globals(code.pop(0))
+        elif str(token) == 'constants': setup_constants(code.pop(0))
 
     return result
 
@@ -83,6 +84,22 @@ def setup_globals(names):
         ts.init('gwrite ' + str(next_global))
         setter.macro = ts.readList()
         next_global += 1
+
+def setup_constants(defs):
+    for x in defs:
+        if not isinstance(x, list) or len(x) != 2: raise ValueError('bad constants' + str(defs))
+        x[0].macro = const_eval(x[1])
+
+def const_eval(code):
+    if not isinstance(code, list): code = [code]
+    val = eval(' '.join(map(const_eval_one, code)))
+    if isinstance(val, int) or isinstance(val, float): return val
+    raise ValueError('bad constant ' + str(code))
+
+def const_eval_one(item):
+    if isinstance(item, ts.symbol) and 'macro' in item.__dict__:
+        item = item.macro
+    return str(item)
 
 def pass2(code):
     global result, pc
@@ -203,7 +220,9 @@ def pass2_symbol(item):
 
 def try_macro(item):
     if not 'macro' in item.__dict__: raise ValueError(str(item) + ' undefined')
-    state.body = item.macro + state.body
+    val = item.macro
+    if not isinstance(val, list): val = [val]
+    state.body = val + state.body
     pass2_item(state.body.pop(0))
 
 def pass2_argloop(nargs):
