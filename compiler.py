@@ -19,7 +19,7 @@ def compile_line(code):
     global result, pc
     result = []
     pc = 0
-    
+
     pass2_body(code)
     return pass3(result[:]) + [0]
 
@@ -157,7 +157,7 @@ def pass2_string(item):
 
 def pass2_list(item):
     # TODO: deal with ## and #
-    
+
     oldcommand, state.command = state.command, True
     add_and_count(['-[-', 0], 3)
     pass2_body(item)
@@ -213,7 +213,7 @@ def pass2_symbol(item):
         if item.outputs: raise ValueError("you don't say what to do with " + str(item))
     else:
         if not item.outputs: raise ValueError(str(item) + " doesn't output")
-    
+
     pass2_argloop(nargs, str(item))
     pass2_funcall(item)
 
@@ -233,7 +233,7 @@ def pass2_argloop(nargs, item):
         pass2_item(state.body.pop(0))
         infix_check()
         nargs -= 1
-    
+
     state.toplevel = oldtoplevel
     state.command = oldcommand
 
@@ -312,7 +312,7 @@ def add_and_count(item, len):
     global pc
     add([pc] + item)
     pc += len
-    
+
 def add(*args):
     map(lambda x: result.append(x), args)
 
@@ -345,7 +345,7 @@ def add_ext(x):
         add(11)
     else:
         add(10)
-    
+
     add(externals.index(x))
 
 def setup():
@@ -425,6 +425,9 @@ print 'Welcome to Logo!'
 while True:
     try: s = raw_input()
     except EOFError: break
+    except KeyboardInterrupt:
+        print 'Goodbye!'
+        sys.exit(0)
 
     try:
         if 1 < len(s) and s[0] == '.': eval(s[1:])
