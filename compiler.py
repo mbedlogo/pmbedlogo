@@ -173,9 +173,9 @@ def pass2_symbol(item):
     nargs = item.args
     if nargs < 0: raise ValueError('not enough inputs to ' + item)
     if state.command:
-        if item.outputs: raise ValueError("you don't say what to do with " + item)
+        if item.outputs: raise ValueError("you don't say what to do with " + str(item))
     else:
-        if not item.outputs: raise ValueError(item + " doesn't output")
+        if not item.outputs: raise ValueError(str(item) + " doesn't output")
     
     pass2_argloop(nargs)
     pass2_funcall(item)
