@@ -412,7 +412,7 @@ def setup():
 
     setup_specials(
         ('(', True, handle_opening),
-        (')', False, handle_closing),
+        (')', True, handle_closing),
         ('waituntil', False, handle_waituntil),
         ('make', False, handle_make),
         ('let', False, handle_let)
