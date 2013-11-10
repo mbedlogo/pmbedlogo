@@ -38,6 +38,7 @@ def pass1(code):
         token = code.pop(0)
         if str(token) == 'to': pass1_fcn(code.pop(0), pass1_args(code), pass1_body(code))
         elif str(token) == 'define': pass1_fcn(code.pop(0), code.pop(0), code.pop(0))
+        elif str(token) == 'global': setup_globals(code.pop(0))
 
     return result
 
@@ -69,6 +70,19 @@ def pass1_body(code):
         result.append(token)
 
     return result
+
+def setup_globals(names):
+    if not isinstance(names, list): names = [names]
+
+    global next_global
+    for x in names:
+        ts.init('( gread ' + str(next_global) + ')');
+        getter = ts.intern(str(x))
+        getter.macro = ts.readList()
+        setter = ts.intern('set' + str(x))
+        ts.init('gwrite ' + str(next_global))
+        setter.macro = ts.readList()
+        next_global += 1
 
 def pass2(code):
     global result, pc
@@ -142,9 +156,12 @@ def dsym_offset(item):
     if item in state.arglist: return len(state.arglist) - state.arglist.index(item) - 1
     return 0xff & 0 - state.locals.index(item) - 1
 
-def handle_opening(): pass
+def handle_opening():
+    pass2_argloop(1)
+    if state.body.pop(0) != ts.intern(')'): raise ValueError('() error')
 
-def handle_closing(): pass
+def handle_closing():
+    raise ValueError('misplaced )')
 
 def handle_waituntil(): pass
 
@@ -170,6 +187,10 @@ def sym(x):
     return ts.dsym(ts.intern(str(x)))
 
 def pass2_symbol(item):
+    if not 'args' in item.__dict__:
+        try_macro(item)
+        return
+
     nargs = item.args
     if nargs < 0: raise ValueError('not enough inputs to ' + item)
     if state.command:
@@ -179,6 +200,11 @@ def pass2_symbol(item):
     
     pass2_argloop(nargs)
     pass2_funcall(item)
+
+def try_macro(item):
+    if not 'macro' in item.__dict__: raise ValueError(str(item) + ' undefined')
+    state.body = item.macro + state.body
+    pass2_item(state.body.pop(0))
 
 def pass2_argloop(nargs):
     oldtoplevel, state.toplevel = state.toplevel, False
@@ -303,6 +329,8 @@ def setup():
         ('output', False, 1),
         ('run', False, 1),
         ('repeat', False, 2),
+        ('gwrite', False, 2),
+        ('gread', True, 1),
         ('not', True, 1),
         ('random', True, 1),
         ('extend', True, 1),
@@ -322,6 +350,10 @@ def setup():
         ('make', False, handle_make),
         ('let', False, handle_let)
     )
+
+    global next_global
+    next_global = 0
+    setup_globals(['n', 'm'])
 
 setup()
 
