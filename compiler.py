@@ -381,7 +381,20 @@ def setup():
 
     externals = []
     setup_prims('external', externals,
-        ('print', False, 1)
+        ('utimer', True, 0), ('resetut', False, 0),
+        ('wait', False, 1),  ('mwait', False, 1),  ('uwait', False, 1),
+        ('time', True, 0), ('settime', False, 1),
+        ('malloc', True, 1), ('free', False, 0),
+        ('print', False, 1), ('prh', False, 1), ('prs', False, 1),
+        ('prn', False, 2), ('cr', False, 0),
+        ('led1on', False, 0), ('led1off', False, 0),
+        ('led2on', False, 0), ('led2off', False, 0),
+        ('led3on', False, 0), ('led3off', False, 0),
+        ('led4on', False, 0), ('led4off', False, 0),
+        ('alloff', False, 0),
+        ('spiwrite', False, 1),
+        ('ticks', True, 0),
+        ('pin20on', False, 0), ('pin20off', False, 0),
     )
 
     setup_specials(
