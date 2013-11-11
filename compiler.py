@@ -1,12 +1,22 @@
 
 import readline
 import ts
+import uartcomms
 
 class record: pass
 
 def run_line(line):
     ts.init(line)
-    print compile_line(ts.readList())
+    command = compile_line(ts.readList())
+    print '  %s' % command
+
+    try:
+        mbed = uartcomms.mbedLogo()
+        mbed.run_command(command)
+        print mbed.read_ascii(),
+    except:
+        print '  no logochip'
+        raise
 
 def compile_line(code):
     global state
@@ -419,6 +429,11 @@ def setup():
     next_global = 0
     setup_globals(['n', 'm'])
 
+    #try:
+    #    mbed = uartcomms.mbedLogo()
+    #except:
+    #    pass
+
 setup()
 
 print 'Welcome to Logo!'
@@ -427,7 +442,7 @@ while True:
     except EOFError: break
     except KeyboardInterrupt:
         print 'Goodbye!'
-        sys.exit(0)
+        exit()
 
     try:
         if 1 < len(s) and s[0] == '.': eval(s[1:])
