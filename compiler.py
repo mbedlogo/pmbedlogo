@@ -17,8 +17,6 @@ def run_line(line):
         mbed.print_ascii()
     except:
         print '  no logochip'
-        pass
-        #raise
 
 def compile_line(code):
     global state
@@ -50,8 +48,8 @@ def compileOnly(file):
     ts.init(f.read())
     f.close()
     result = pass3(pass2(pass1(ts.readList())))
-    print '  [%s]' % ', '.join(map(str, result))
-    print '  %d bytes' %len(result)
+    print ' ', result
+    print ' ', len(result), 'bytes'
     return result
 
 def pass1(code):
