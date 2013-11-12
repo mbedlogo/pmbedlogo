@@ -14,7 +14,7 @@ def run_line(line):
     try:
         mbed = uartcomms.mbedLogo()
         mbed.run_command(command)
-        print mbed.read_ascii(),
+        mbed.print_ascii()
     except:
         print '  no logochip'
         pass

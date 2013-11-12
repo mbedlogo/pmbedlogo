@@ -34,17 +34,18 @@ class mbedLogo():
                 break
         return response
 
-    def read_ascii(self):
-        """Reads response from the mbed in ASCII"""
-        response = self.read()
-        if len(response) != 0:
-            response_str = ''
-            for i in response:
-                if i != 255 and i != '\n':
-                    response_str = response_str + chr(i)
-            return '  %s\r' %response_str
-        else:
-            return '\r'
+    def print_ascii(self, format = '  %s'):
+        """Prints response from the mbed in ASCII"""
+        response_str = ''
+        while True:
+            data = self.mbed.read()
+            if data == '\xff': break
+            if data == '\n':
+                print format % response_str
+                response_str = ''
+            else: response_str += data
+
+        if '' != response_str: print format % response_str
 
     def write(self, data):
         """Writes one byte to the mbed
