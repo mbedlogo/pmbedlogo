@@ -13,7 +13,9 @@ class mbedLogo():
         self.mbed = serial.Serial(mbed_port, baudrate, timeout=timeout)
 
     def list_mbed(self):
-        return [port[0] for port in list_ports.grep('ttyACM')][0]
+        return reduce(lambda x, y: x + y,
+            [[x[0] for x in list_ports.grep(pat)] for pat
+                in ['ttyACM', 'cu.usbmodem']])[0]
 
     def __exit__(self):
         self.mbed.close()
