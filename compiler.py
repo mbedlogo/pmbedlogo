@@ -2,6 +2,7 @@
 import readline
 import ts
 import uartcomms
+import traceback
 
 class record: pass
 
@@ -448,6 +449,7 @@ while True:
         exit()
 
     try:
-        if 1 < len(s) and s[0] == '.': eval(s[1:])
+        if 1 < len(s) and s[0] == '.': exec s[1:]
         else: run_line(s)
     except ValueError as e: print e
+    except: traceback.print_exc()
