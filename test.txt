@@ -1,0 +1,32 @@
+to test
+let [n 0]
+repeat 30
+ [print :n
+  make "n :n + 1234]
+end
+
+to go
+repeat 3 [shift 100]
+mwait 100
+repeat 3 [bshift 100]
+end
+
+to shift :n
+led1on mwait :n
+led1off led2on mwait :n
+led2off led3on mwait :n
+led3off led4on mwait :n
+led4off
+end
+
+to bshift :n
+led4on mwait :n
+led4off led3on mwait :n
+led3off led2on mwait :n
+led2off led1on mwait :n
+led1off
+end
+
+to 2ticks
+print ticks + ticks
+end
