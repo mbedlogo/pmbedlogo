@@ -23,11 +23,11 @@ def readList():
 def readToken():
     s = next();
     if len(s) == 0: return intern(s)
-    
+
     if s[0] == '$':
         try: return int(s[1:], 16)
         except ValueError: pass
-    
+
     if s[0] == '"': return qsym(intern(s[1:]))
     if s[0] == ':': return dsym(intern(s[1:]))
     if s[0] == '|': return s[1:]
@@ -36,7 +36,7 @@ def readToken():
     if s[0] == '#':
         try: return int(s[1:], 2)
         except ValueError: pass
-    
+
     if s[-1] == 'f':
         try: return float(s[:-1])
         except ValueError: pass
@@ -51,10 +51,10 @@ def readToken():
 
     try: return int(s)
     except ValueError: pass
-    
+
     try: return float(s)
     except ValueError: pass
-    
+
     return intern(s)
 
 def next():
@@ -69,7 +69,7 @@ def next():
                 s += nextChar()
     else:
         s = nextChar()
-    
+
     skipSpace()
     return s
 
@@ -81,7 +81,7 @@ def getVbarString():
             nextChar()
             break
         else: s += nextChar()
-    
+
     return s
 
 def peekChar():
@@ -115,21 +115,21 @@ def intern(s):
 
 class symbol:
     def __init__(self, pname): self.pname = pname
-    
+
     def __repr__(self): return '<symbol: ' + self.pname + '>'
 
     def __str__(self): return self.pname
 
 class qsym:
     def __init__(self, sym): self.sym = sym
-    
+
     def __repr__(self): return '<qsym: ' + self.sym.pname + '>'
 
     def __str__(self): return self.sym.pname
-        
+
 class dsym:
     def __init__(self, sym): self.sym = sym
-    
+
     def __repr__(self): return '<dsym: ' + self.sym.pname + '>'
 
     def __eq__(self, other):
