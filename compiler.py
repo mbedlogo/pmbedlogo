@@ -36,6 +36,15 @@ def compile_line(code):
     return pass3(result[:]) + [0]
 
 def compile(file):
+    code = compileOnly(file)
+    try:
+        mbed = uartcomms.mbedLogo()
+        mbed.erase_flash(0xf)
+        mbed.write_flash(0xf, 0xf000, code)
+    except:
+        print '  no logochip'
+
+def compileOnly(file):
     setup()
     f = open(file)
     ts.init(f.read())
@@ -43,6 +52,7 @@ def compile(file):
     result = pass3(pass2(pass1(ts.readList())))
     print '  [%s]' % ', '.join(map(str, result))
     print '  %d bytes' %len(result)
+    return result
 
 def pass1(code):
     global result
