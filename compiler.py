@@ -3,6 +3,7 @@ import readline
 import ts
 import uartcomms
 import traceback
+import time
 
 class record: pass
 
@@ -12,7 +13,7 @@ def run_line(line):
     print '  %s' % command
 
     try:
-        mbed = uartcomms.mbedLogo()
+        check_comms()
         mbed.run_command(command)
         mbed.print_ascii()
     except:
@@ -36,7 +37,7 @@ def compile_line(code):
 def compile(file):
     code = compileOnly(file)
     try:
-        mbed = uartcomms.mbedLogo()
+        check_comms()
         mbed.erase_flash(0xf)
         mbed.write_flash(0xf, 0xf000, code)
     except:
@@ -441,10 +442,30 @@ def setup():
     next_global = 0
     setup_globals(['n', 'm'])
 
-    #try:
-    #    mbed = uartcomms.mbedLogo()
-    #except:
-    #    pass
+mbed = None
+def check():
+    global mbed
+    for x in range(2):
+        start_comms()
+        while [] != mbed.read(): pass
+        if [23] == mbed.test_communication(): return True
+        mbed.__exit__()
+        mbed = None
+
+    raise Exception()
+
+def start_comms():
+    global mbed
+    if None == mbed: mbed = uartcomms.mbedLogo()
+
+def check_comms():
+    """Prepares communications with mbed by:
+    - opening the port if not opened previously
+    - blindly sending the stop command blindly
+    - and checking the communications """
+    start_comms()
+    mbed.write(0); time.sleep(0.2)
+    check()
 
 setup()
 
