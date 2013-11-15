@@ -171,7 +171,7 @@ class mbedLogo():
                 self.write(data[i])
             address = address + count
             data = data[count:]
-            response = self.read()
+            response = self.read(0.4)
         return response
 
     def erase_flash(self, sector):
@@ -186,7 +186,7 @@ class mbedLogo():
         """
         self.write(0xfa)        # Send the erase flash opcode
         self.write(sector)        # Send the sector to write
-        return self.read()
+        return self.read(0.4)
 
     def run_command(self, command):
         """Writes compiled Logo command to the FLASH memory and runs it
