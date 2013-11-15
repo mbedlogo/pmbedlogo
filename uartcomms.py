@@ -125,10 +125,15 @@ class mbedLogo():
             a list with the readings
 
         """
-        self.write(0xfe)        # Send the read memory opcode
-        self.write32(address)    # Send the 32 bits start address (4 bytes)
-        self.write16(count)    # Send how many bytes we want to read (2 bytes)
-        return self.read()    # Read the number of bytes from the device
+        try:
+            self.stop_everything()
+            self.reader.echo = False
+            self.write(0xfe)        # Send the read memory opcode
+            self.write32(address)    # Send the 32 bits start address (4 bytes)
+            self.write16(count)    # Send how many bytes we want to read (2 bytes)
+            return [ord(x) for x in self.read()]  # Read the number of bytes from the device
+        finally:
+            self.reader.echo = True
 
     def write_memory(self, address, data):
         """Writes bytes to the RAM memory starting at address

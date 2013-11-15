@@ -41,6 +41,14 @@ def compile(file):
     except:
         print '  no logochip'
 
+def dump(addr, count = 16):
+    count = (count + 15) / 16 * 16
+    l = mbed.read_memory(addr, count)
+    while [] != l:
+        print '%0.8x -' % addr, ' '.join(['%0.2x' % x for x in l[:16]])
+        l = l[16:]
+        addr += 16
+
 def compileOnly(file):
     setup()
     f = open(file)
