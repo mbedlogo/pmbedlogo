@@ -23,7 +23,7 @@ class Reader(Thread):
             data = self.mbed.read()
             if data != '':
                 self.q.put(data)
-                if ' ' < data and data < '\xff': line += data
+                if ' ' <= data and data < '\xff': line += data
                 if data == '\n' and self.echo:
                     print ' ', line
                     line = ''
