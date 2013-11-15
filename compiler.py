@@ -465,6 +465,7 @@ def check_comms():
     check()
 
 setup()
+start_comms()
 
 print 'Welcome to Logo!'
 while True:
