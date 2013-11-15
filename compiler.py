@@ -14,8 +14,7 @@ def run_line(line):
 
     try:
         check_comms()
-        mbed.run_command(command)
-        mbed.print_ascii()
+        if command != [0]: mbed.run_command(command)
     except:
         print '  no logochip'
 
@@ -448,8 +447,8 @@ def check():
     for x in range(2):
         start_comms()
         while [] != mbed.read(): pass
-        if [23] == mbed.test_communication(): return True
-        mbed.__exit__()
+        if ['\x17'] == mbed.test_communication(): return True
+        mbed.close()
         mbed = None
 
     raise Exception()
@@ -475,10 +474,12 @@ while True:
     except EOFError: break
     except KeyboardInterrupt:
         print 'Goodbye!'
-        exit()
+        break
 
     try:
         if 1 < len(s) and s[0] == '.': exec s[1:]
         else: run_line(s)
     except ValueError as e: print e
     except: traceback.print_exc()
+
+if None != mbed: mbed.close()

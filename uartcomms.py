@@ -1,51 +1,72 @@
 
 import serial
 from serial.tools import list_ports
+from threading import Thread
+from Queue import Queue
+import time
 
 eSector = 0x0e
 e = 0xe000
 g = 0x2007c000
+
+class Reader(Thread):
+    def __init__(self, mbed):
+        Thread.__init__(self)
+        self.mbed = mbed
+
+    def run(self):
+        self.keepRunning = True
+        self.echo = True
+        self.q = Queue()
+        line = ''
+        while self.keepRunning:
+            data = self.mbed.read()
+            if data != '':
+                self.q.put(data)
+                if ' ' < data and data < '\xff': line += data
+                if data == '\n' and self.echo:
+                    print ' ', line
+                    line = ''
+
+    def read(self, timeout = 0.2):
+        starttime = time.time()
+        while self.q.empty() and time.time() - starttime < timeout: pass
+        if self.q.empty(): return None
+        return self.q.get()
+
+    def stop(self):
+        self.keepRunning = False
 
 class mbedLogo():
 
     def __init__(self, port='/dev/ttyACM0', baudrate=9600, timeout=0.2):
         mbed_port = self.list_mbed()
         self.mbed = serial.Serial(mbed_port, baudrate, timeout=timeout)
+        self.reader = Reader(self.mbed)
+        self.reader.start()
 
     def list_mbed(self):
         return reduce(lambda x, y: x + y,
             [[x[0] for x in list_ports.grep(pat)] for pat
                 in ['ttyACM', 'cu.usbmodem']])[0]
 
-    def __exit__(self):
+    def close(self):
+        self.reader.stop()
+        self.reader.join()
         self.mbed.close()
 
     def bytes_available(self):
         return self.mbed.inWaiting()
 
-    def read(self):
+    def read(self, timeout = 0.2):
         """Reads response from the mbed"""
         response = []
         while True:
-            data = self.mbed.read()
-            if data != '':
-                response.append(ord(data))
-            else:
-                break
+            data = self.reader.read(timeout)
+            if data == None: break
+            response.append(data)
+
         return response
-
-    def print_ascii(self, format = '  %s'):
-        """Prints response from the mbed in ASCII"""
-        response_str = ''
-        while True:
-            data = self.mbed.read()
-            if data == '\xff': break
-            if data == '\n':
-                print format % response_str
-                response_str = ''
-            else: response_str += data
-
-        if '' != response_str: print format % response_str
 
     def write(self, data):
         """Writes one byte to the mbed
