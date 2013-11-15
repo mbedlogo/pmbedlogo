@@ -199,3 +199,7 @@ class mbedLogo():
         self.erase_flash(eSector)    # Erase flash sector
         self.write_flash(eSector, e, command)    # Write command to flash
         self.write(0xfc)        # Send the run opcode
+
+    def stop_everything(self):
+        self.write(0); time.sleep(0.2)
+        while self.bytes_available(): self.read()

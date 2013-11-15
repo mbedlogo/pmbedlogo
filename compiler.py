@@ -3,7 +3,6 @@ import readline
 import ts
 import uartcomms
 import traceback
-import time
 
 class record: pass
 
@@ -446,7 +445,7 @@ def check():
     global mbed
     for x in range(2):
         start_comms()
-        while [] != mbed.read(): pass
+        mbed.stop_everything()
         if ['\x17'] == mbed.test_communication(): return True
         mbed.close()
         mbed = None
@@ -463,7 +462,6 @@ def check_comms():
     - blindly sending the stop command blindly
     - and checking the communications """
     start_comms()
-    mbed.write(0); time.sleep(0.2)
     check()
 
 setup()
