@@ -207,4 +207,4 @@ class mbedLogo():
 
     def stop_everything(self):
         self.write(0); time.sleep(0.2)
-        while self.bytes_available(): self.read()
+        while [] != self.read(): pass
