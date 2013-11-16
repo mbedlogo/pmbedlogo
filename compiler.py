@@ -70,7 +70,7 @@ def pass1(code):
     while [] != code:
         token = code.pop(0)
         if str(token) == 'to': pass1_fcn(code.pop(0), pass1_args(code), pass1_body(code))
-        elif str(token) == 'define': pass1_fcn(code.pop(0), code.pop(0), code.pop(0))
+        elif str(token) == 'define': pass1_fcn(code.pop(0), [ts.dsym(x) for x in code.pop(0)], code.pop(0))
         elif str(token) == 'global': setup_globals(code.pop(0))
         elif str(token) == 'constants': setup_constants(code.pop(0))
 
