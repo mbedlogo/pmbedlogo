@@ -473,7 +473,10 @@ def check_comms():
     check()
 
 setup()
-start_comms()
+try:
+    start_comms()
+except:
+    print '  no logochip'
 
 print 'Welcome to Logo!'
 while True:
