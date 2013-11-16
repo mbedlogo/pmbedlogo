@@ -227,7 +227,14 @@ def handle_opening():
 def handle_closing():
     raise LogoError('misplaced )')
 
-def handle_waituntil(): pass
+def handle_waituntil():
+    add_and_count(['-[-', 0], 3)
+    newbody = state.body.pop(0)
+    oldbody, state.body = state.body, newbody
+    pass2_argloop(1, 'waituntil')
+    add_and_count(['-]-r', 0], 1)
+    add_and_count(['prim', ts.intern('waituntil')], 1)
+    state.body = oldbody
 
 def handle_make():
     var = sym(state.body.pop(0))
