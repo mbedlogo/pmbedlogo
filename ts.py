@@ -132,6 +132,8 @@ class dsym:
 
     def __repr__(self): return '<dsym: ' + self.sym.pname + '>'
 
+    def __str__(self): return self.sym.pname
+
     def __eq__(self, other):
         if not isinstance(other, dsym): return False
         return self.sym.pname == other.sym.pname

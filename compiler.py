@@ -6,6 +6,11 @@ import traceback
 
 class record: pass
 
+class LogoError(ValueError):
+    def __init__(self, msg):
+        if state.name != '*toplevel*': msg += ' in ' + str(state.name)
+        ValueError.__init__(self, msg)
+
 def run_line(line):
     ts.init(line)
     command = compile_line(ts.readList())
@@ -83,6 +88,10 @@ def mmmember(item, body):
     if isinstance(body, list): return [] != filter(lambda(x): mmmember(item, x), body)
     return item == body
 
+def mmstr(item):
+    if isinstance(item, list): return '[' + ' '.join(map(mmstr, item)) + ']'
+    return str(item)
+
 def pass1_args(code):
     result = []
     while [] != code:
@@ -114,15 +123,18 @@ def setup_globals(names):
         next_global += 1
 
 def setup_constants(defs):
-    for x in defs:
-        if not isinstance(x, list) or len(x) != 2: raise ValueError('bad constants' + str(defs))
-        x[0].macro = const_eval(x[1])
+    try:
+        for x in defs:
+            if not isinstance(x, list) or len(x) != 2: raise LogoError('bad constants ' + mmstr(defs))
+            x[0].macro = const_eval(x[1])
+    except:
+        raise LogoError('bad constants ' + mmstr(defs))
 
 def const_eval(code):
     if not isinstance(code, list): code = [code]
     val = eval(' '.join(map(const_eval_one, code)))
     if isinstance(val, int) or isinstance(val, float): return val
-    raise ValueError('bad constant ' + str(code))
+    raise LogoError('bad constant ' + mmstr(code))
 
 def const_eval_one(item):
     if isinstance(item, ts.symbol) and 'macro' in item.__dict__:
@@ -198,15 +210,18 @@ def pass2_dsym(item):
     add_and_count(['lthing', offset], 2)
 
 def dsym_offset(item):
-    if item in state.arglist: return len(state.arglist) - state.arglist.index(item) - 1
-    return 0xff & 0 - state.locals.index(item) - 1
+    try:
+        if item in state.arglist: return len(state.arglist) - state.arglist.index(item) - 1
+        return 0xff & 0 - state.locals.index(item) - 1
+    except:
+        raise LogoError(str(item) + " isn't a local")
 
 def handle_opening():
     pass2_argloop(1, ')')
-    if state.body.pop(0) != ts.intern(')'): raise ValueError('() error')
+    if [] == state.body or state.body.pop(0) != ts.intern(')'): raise LogoError('() error')
 
 def handle_closing():
-    raise ValueError('misplaced )')
+    raise LogoError('misplaced )')
 
 def handle_waituntil(): pass
 
@@ -220,7 +235,7 @@ def handle_let():
     if state.name == '*toplevel*': raise ValueError('let can only be used in a procedure')
     newbody = state.body.pop(0)
     oldbody, state.body = state.body, newbody
-    if not isinstance(state.body, list): raise ValueError('let needs a list as input')
+    if not isinstance(state.body, list): raise LogoError('let needs a list as input')
     while [] != state.body:
         state.locals.append(sym(state.body[0]))
         state.name.locals += 1
@@ -237,17 +252,17 @@ def pass2_symbol(item):
         return
 
     nargs = item.args
-    if nargs < 0: raise ValueError('not enough inputs to ' + item)
+    if nargs < 0: raise LogoError('not enough inputs to ' + item)
     if state.command:
-        if item.outputs: raise ValueError("you don't say what to do with " + str(item))
+        if item.outputs: raise LogoError("you don't say what to do with " + str(item))
     else:
-        if not item.outputs: raise ValueError(str(item) + " doesn't output")
+        if not item.outputs: raise LogoError(str(item) + " doesn't output")
 
     pass2_argloop(nargs, str(item))
     pass2_funcall(item)
 
 def try_macro(item):
-    if not 'macro' in item.__dict__: raise ValueError(str(item) + ' undefined')
+    if not 'macro' in item.__dict__: raise LogoError(str(item) + ' undefined')
     val = item.macro
     if not isinstance(val, list): val = [val]
     state.body = val + state.body
@@ -258,7 +273,7 @@ def pass2_argloop(nargs, item):
     oldcommand, state.command = state.command, False
 
     while 0 < nargs:
-        if len(state.body) == 0: raise ValueError('not enough inputs to ' + item)
+        if len(state.body) == 0: raise LogoError('not enough inputs to ' + item)
         pass2_item(state.body.pop(0))
         infix_check()
         nargs -= 1
