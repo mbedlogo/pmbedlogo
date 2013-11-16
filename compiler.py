@@ -187,16 +187,19 @@ def pass2_item(item):
     else: pass2_symbol(item)
 
 def pass2_number(n):
+    command_check(n)
     if -1 < n and n < 256:
         add_and_count(['byte', n], 2)
     else:
         add_and_count(['number', n], 5)
 
 def pass2_string(item):
+    command_check(item)
     s = str(item).replace('\\n', '\n')
     add_and_count(['string', s], len(s))
 
 def pass2_list(item):
+    command_check(item)
     # TODO: deal with ## and #
 
     oldcommand, state.command = state.command, True
@@ -206,6 +209,7 @@ def pass2_list(item):
     state.command = oldcommand
 
 def pass2_dsym(item):
+    command_check(item)
     offset = dsym_offset(item)
     add_and_count(['lthing', offset], 2)
 
@@ -286,6 +290,9 @@ def pass2_funcall(item):
     elif item.type == 'external': add_and_count(['external', item], 2)
     elif item.special: item.handler()
     else: add_and_count(['prim', item], 1)
+
+def command_check(item):
+    if state.command: raise LogoError("you don't say what to do with " + mmstr(item))
 
 def infix_check():
     if not is_infix(): return
