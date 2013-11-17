@@ -125,16 +125,15 @@ def setup_globals(names):
 def setup_constants(defs):
     try:
         for x in defs:
-            if not isinstance(x, list) or len(x) != 2: raise LogoError('bad constants ' + mmstr(defs))
-            x[0].macro = const_eval(x[1])
+            x[0].macro = const_eval(x[1:])
     except:
-        raise LogoError('bad constants ' + mmstr(defs))
+        raise ValueError('bad constants ' + mmstr(defs))
 
 def const_eval(code):
-    if not isinstance(code, list): code = [code]
+    if len(code) == 1 and isinstance(code[0], list): code = code[0]
     val = eval(' '.join(map(const_eval_one, code)))
     if isinstance(val, int) or isinstance(val, float): return val
-    raise LogoError('bad constant ' + mmstr(code))
+    raise ValueError('bad constant ' + mmstr(code))
 
 def const_eval_one(item):
     if isinstance(item, ts.symbol) and 'macro' in item.__dict__:
