@@ -186,6 +186,9 @@ def pass2_item(item):
     elif isinstance(item, ts.qsym): pass2_string(item)
     else: pass2_symbol(item)
 
+def floatbits(item):
+    raise LogoError(str(item) + " isn't supported")
+
 def pass2_number(n):
     command_check(n)
     if -1 < n and n < 256:
