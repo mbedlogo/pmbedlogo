@@ -258,6 +258,7 @@ def handle_let():
     state.body = oldbody
 
 def sym(x):
+    if not isinstance(x, ts.symbol): raise LogoError(mmstr(x) + " isn't a valid local")
     return ts.dsym(ts.intern(str(x)))
 
 def pass2_symbol(item):
