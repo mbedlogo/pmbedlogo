@@ -452,7 +452,7 @@ def setup():
         ('utimer', True, 0), ('resetut', False, 0),
         ('wait', False, 1),  ('mwait', False, 1),  ('uwait', False, 1),
         ('time', True, 0), ('settime', False, 1),
-        ('malloc', True, 1), ('free', False, 0),
+        ('malloc', True, 1), ('free', False, 1),
         ('print', False, 1), ('prh', False, 1), ('prs', False, 1),
         ('prn', False, 2), ('cr', False, 0),
         ('led1on', False, 0), ('led1off', False, 0),
