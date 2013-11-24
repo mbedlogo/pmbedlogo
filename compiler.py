@@ -506,12 +506,12 @@ def check_comms():
     check()
 
 setup()
+print 'Welcome to Logo!'
 try:
     start_comms()
 except:
     print '  no logochip'
 
-print 'Welcome to Logo!'
 while True:
     try: s = raw_input()
     except EOFError: break
