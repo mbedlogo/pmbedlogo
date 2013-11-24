@@ -30,3 +30,12 @@ end
 to 2ticks
 print ticks + ticks
 end
+
+to foo
+let [print 92 "bar 57]
+make print 93
+make "print 94
+print :print
+make bar 10
+print :bar
+end
