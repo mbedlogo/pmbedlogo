@@ -39,3 +39,4 @@ print :print
 make bar 10
 print :bar
 end
+
