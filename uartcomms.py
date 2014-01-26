@@ -30,7 +30,7 @@ class Reader(Thread):
 
     def read(self, timeout = 0.2):
         starttime = time.time()
-        while self.q.empty() and time.time() - starttime < timeout: pass
+        while self.q.empty() and time.time() - starttime < timeout: time.sleep(0)
         if self.q.empty(): return None
         return self.q.get()
 
