@@ -1,6 +1,7 @@
 #include "cvm.h"
 
 Timer timer;
+Timer utimer;
 Ticker ticker;
 DigitalOut led1(LED1);
 DigitalOut led2(LED2);
@@ -30,8 +31,10 @@ void mwait(ULONG c){
 void primWait(ULONG c){mwait(c*100);}
 void uwait(ULONG c){wait_us(c);}
 
-ULONG utimer(){return timer.read_us();}
-void resetut(){timer.reset();}
+ULONG read_timer(){return timer.read_ms();}
+void reset_timer(){timer.reset();}
+ULONG read_utimer(){return utimer.read_us();}
+void reset_utimer(){utimer.reset();}
 
 void *lmalloc(ULONG n){return malloc(n);}
 void lfree(void *n){free(n);}
@@ -94,7 +97,7 @@ void pin20on(){pin20=1;}
 void pin20off(){pin20=0;}
 
 void *fcns[] = {
-    (void*) 0, (void*) utimer,  (void*) 0, (void*) resetut,  
+    (void*) 0, (void*) read_utimer,  (void*) 0, (void*) reset_utimer,
     (void*) 1, (void*) primWait, (void*) 1, (void*) mwait, (void*) 1, (void*) uwait,
     (void*) 0, (void*) primTime, (void*) 1, (void*) settime,
     (void*) 1, (void*) lmalloc,  (void*) 0, (void*) lfree,  
@@ -107,10 +110,12 @@ void *fcns[] = {
     (void*) 0, (void*) alloff,
     (void*) 1, (void*) spiWrite, (void*) 0, (void*) primTicks,
     (void*) 0, (void*) pin20on, (void*) 0, (void*) pin20off,
+    (void*) 0, (void*) read_timer,  (void*) 0, (void*) reset_timer,
 };
 
 void lib_init(){
     timer.start();
+    utimer.start();
     ticker.attach_us(handleTick, 1000);
     fader.period_ms(10);
     fader.pulsewidth_ms(5);
