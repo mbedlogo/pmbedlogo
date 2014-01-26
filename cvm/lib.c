@@ -41,6 +41,7 @@ void lfree(void *n){free(n);}
 
 void print(SLONG c){pc.printf("%d\n", c);}
 void prh(SLONG c){pc.printf("%08x\n", c);}
+void prhb(SLONG c){pc.printf("%02x\n", c);}
 void prs(UBYTE* s){pc.printf("%s", s);}
 void prn(char* s,ULONG n){pc.printf(s, n);}
 
@@ -111,6 +112,7 @@ void *fcns[] = {
     (void*) 1, (void*) spiWrite, (void*) 0, (void*) primTicks,
     (void*) 0, (void*) pin20on, (void*) 0, (void*) pin20off,
     (void*) 0, (void*) read_timer,  (void*) 0, (void*) reset_timer,
+    (void*) 1, (void*) prhb,
 };
 
 void lib_init(){

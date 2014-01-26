@@ -471,6 +471,7 @@ def setup():
         ('ticks', True, 0),
         ('pin20on', False, 0), ('pin20off', False, 0),
         ('timer', True, 0), ('resett', False, 0),
+        ('prhb', False, 1),
     )
 
     setup_specials(
