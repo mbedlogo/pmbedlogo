@@ -252,7 +252,7 @@ void prim_or(){SLONG t0 = *--sp; *sp++ = *--sp|t0;}
 void prim_xor(){SLONG t0 = *--sp; *sp++ = *--sp^t0;}
 void prim_not(){if(*--sp) *sp++=0; else *sp++=1;}
 
-void prim_lsl(){
+void prim_lsh(){
     SLONG cnt = *--sp;
     SLONG n = *--sp;
     if(cnt<0) *sp++ = n>>-cnt;
@@ -286,7 +286,7 @@ void(*prims[])() = {
     prim_random, prim_extend,
     prim_equal, prim_ne, prim_greater, prim_less,
     prim_and, prim_or, prim_xor,
-    prim_not, prim_lsl,
+    prim_not, prim_lsh,
     prim_g, prim_fl,
     prim_readb, prim_writeb,
     prim_readh, prim_writeh,

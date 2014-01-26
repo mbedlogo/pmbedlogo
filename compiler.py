@@ -443,7 +443,7 @@ def setup():
         ('or', True, -1),
         ('xor', True, -1),
         ('not', True, 1),
-        ('lsl', True, 2),
+        ('lsh', True, 2),
         ('g', True, 1), ('fl', True, 1),
         ('readb', True, 1), ('writeb', False, 2),
         ('readh', True, 1), ('writeh', False, 2),
