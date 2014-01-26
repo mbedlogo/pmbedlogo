@@ -206,5 +206,4 @@ class mbedLogo():
         self.write(0xfc)        # Send the run opcode
 
     def stop_everything(self):
-        self.write(0); time.sleep(0.2)
-        while [] != self.read(): pass
+        self.write(0); time.sleep(0.05)
