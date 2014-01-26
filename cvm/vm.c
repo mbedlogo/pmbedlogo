@@ -270,6 +270,41 @@ void prim_write(){SLONG t0 = *--sp; *(SLONG*)*--sp = t0;}
 
 void prim_sp(){*sp++ = (SLONG) sp;}
 
+void prim_byte0() { UBYTE t0 = *--sp; *sp++ = t0 & 0xff; }
+void prim_byte1() { UBYTE t0 = *--sp; *sp++ = (t0 >> 8) & 0xff; }
+void prim_byte2() { UBYTE t0 = *--sp; *sp++ = (t0 >> 16) & 0xff; }
+void prim_byte3() { UBYTE t0 = *--sp; *sp++ = (t0 >> 24) & 0xff; }
+
+void prim_bset() {
+    ULONG t1 = (ULONG)*--sp; ULONG *t0 = (ULONG*)*--sp;
+    *t0 = *t0 | t1;
+}
+
+void prim_bsetb() {
+    UBYTE t1 = (UBYTE)*--sp; UBYTE *t0 = (UBYTE*)*--sp;
+    *t0 = *t0 | t1;
+}
+
+void prim_bclr() {
+    ULONG t1 = (ULONG)*--sp; ULONG *t0 = (ULONG*)*--sp;
+    *t0 = *t0 & ~t1;
+}
+
+void prim_bclrb() {
+    UBYTE t1 = (UBYTE)*--sp; UBYTE *t0 = (UBYTE*)*--sp;
+    *t0 = *t0 & ~t1;
+}
+
+void prim_btst() {
+    ULONG t1 = (ULONG)*--sp; ULONG *t0 = (ULONG*)*--sp;
+    *sp++ = (*t0 & t1) ? 1 : 0;
+}
+
+void prim_btstb() {
+    UBYTE t1 = (UBYTE)*--sp; UBYTE *t0 = (UBYTE*)*--sp;
+    *sp++ = (*t0 & t1) ? 1 : 0;
+}
+
 void(*prims[])() = {
     eval_done,
     eval_byte, eval_num,
@@ -290,5 +325,8 @@ void(*prims[])() = {
     prim_readb, prim_writeb,
     prim_readh, prim_writeh,
     prim_read, prim_write,
-    prim_sp
+    prim_sp,
+    prim_byte0, prim_byte1, prim_byte2, prim_byte3,
+    prim_bset, prim_bclr, prim_btst,
+    prim_bsetb, prim_bclrb, prim_btstb,
 };

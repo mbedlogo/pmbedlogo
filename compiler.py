@@ -449,6 +449,9 @@ def setup():
         ('readh', True, 1), ('writeh', False, 2),
         ('read', True, 1), ('write', False, 2),
         ('sp', True, 0),
+        ('byte0', True, 1), ('byte1', True, 1), ('byte2', True, 1), ('byte3', True, 1),
+        ('bset', False, 2), ('bclr', False, 2), ('btst', True, 2),
+        ('bsetb', False, 2), ('bclrb', False, 2), ('btstb', True, 2),
     )
 
     externals = []
