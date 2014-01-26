@@ -487,7 +487,7 @@ def check():
     for x in range(2):
         start_comms()
         mbed.stop_everything()
-        if ['\x17'] == mbed.test_communication(): return True
+        if '\x17' == mbed.test_communication(): return True
         mbed.close()
         mbed = None
 
