@@ -433,7 +433,7 @@ def setup():
         ('*', True, -1),
         ('/', True, -1),
         ('%', True, -1),
-        ('random', True, 1),
+        ('random', True, 0),
         ('extend', True, 1),
         ('=', True, -1),
         ('!=', True, -1),

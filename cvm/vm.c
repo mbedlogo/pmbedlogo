@@ -236,8 +236,7 @@ void prim_mod(){
 }
 
 void prim_random(){
-    SLONG t0 = *--sp;
-    *sp++ = ((rand()+(rand()<<15))&0x7fffffff)%t0;
+    *sp++ = (rand()+(rand()<<15))&0x7fffffff;
   }
 
 void prim_extend(){*sp++ = (SLONG)(SSHORT)*--sp;}
