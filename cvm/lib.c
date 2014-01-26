@@ -40,8 +40,35 @@ void print(SLONG c){pc.printf("%d\n", c);}
 void prh(SLONG c){pc.printf("%08x\n", c);}
 void prs(UBYTE* s){pc.printf("%s", s);}
 void prn(char* s,ULONG n){pc.printf(s, n);}
-void cr(){pc.printf("\n");}
 
+void prf(char *s, SLONG n) {
+    for (; *s; s++) {
+        if ('%' == *s) {
+            s++;
+            switch (*s) {
+                case 'b':
+                    pc.printf("%02x", n);
+                break;
+
+                case 'w':
+                    pc.printf("%08x", n);
+                break;
+
+                case 'd':
+                    pc.printf("%d", n);
+                break;
+
+                case 0:
+                    return;
+
+                default:
+                    pc.putc(*s);
+                break;
+            }
+        } else
+            pc.putc(*s);
+    }
+}
 
 void led1on(){led1=1;}
 void led1off(){led1=0;}
@@ -72,7 +99,7 @@ void *fcns[] = {
     (void*) 0, (void*) primTime, (void*) 1, (void*) settime,
     (void*) 1, (void*) lmalloc,  (void*) 0, (void*) lfree,  
     (void*) 1, (void*) print,  (void*) 1, (void*) prh,  
-    (void*) 1, (void*) prs,  (void*) 2, (void*) prn,  (void*) 0, (void*) cr,
+    (void*) 1, (void*) prs,  (void*) 2, (void*) prn,  (void*) 2, (void*) prf,
     (void*) 0, (void*) led1on, (void*) 0, (void*) led1off,
     (void*) 0, (void*) led2on, (void*) 0, (void*) led2off,
     (void*) 0, (void*) led3on, (void*) 0, (void*) led3off,
